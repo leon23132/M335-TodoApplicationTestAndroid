@@ -55,7 +55,7 @@ public class AddNewTask extends AppCompatActivity implements View.OnClickListene
                     finish();
                 }).start();
 
-
+                setResult(RESULT_OK);
             }
         });
 

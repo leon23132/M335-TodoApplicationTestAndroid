@@ -10,7 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.room.Room;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TaskList extends AppCompatActivity implements View.OnClickListener {
@@ -31,6 +33,25 @@ public class TaskList extends AppCompatActivity implements View.OnClickListener 
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+
+        listView = findViewById(R.id.list_tasks);
+        tasksList = new ArrayList<>();
+        adapter = new TaskAdapter(this,tasksList);
+
+        listView.setAdapter(adapter);
+
+        db = Room.databaseBuilder(getApplicationContext(),
+                AppDatabase.class, "task_db"
+        ).build();
+
+        loadTasks();
+
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Task selectedTask = tasksList.get(position);
+            // Implementiere hier die Logik für die Auswahl einer Aufgabe in der Liste
+        });
+
     }
 
     @Override
@@ -41,6 +62,42 @@ public class TaskList extends AppCompatActivity implements View.OnClickListener 
     public void  btnAddTask(View v){
         Intent intent = new Intent(this, AddNewTask.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_ADD_TASK && resultCode == RESULT_OK) {
+            loadTasks();
+        }
+    }
+
+    public void onNewTask(View v) {
+        Intent intent = new Intent(TaskList.this, AddNewTask.class);
+        startActivityForResult(intent, REQUEST_CODE_ADD_TASK);
+    }
+
+
+
+    private void loadTasks() {
+        new Thread(() -> {
+            List<Task> tasks = db.taskDao().selectAll();
+
+            runOnUiThread(() -> {
+                tasksList.clear();
+                tasksList.addAll(tasks);
+                adapter.notifyDataSetChanged();
+            });
+        }).start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (db != null) {
+            db.close();
+        }
     }
 
 }

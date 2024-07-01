@@ -7,7 +7,7 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/textTask_Name"
+        android:id="@+id/textTaskName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="100"

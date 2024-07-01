@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MyTodoApplication</string>
     <string name="task_String_name_value">Name</string>
     <string name="task_String_description_value">Beschreibung</string>
     <string name="task_String_status_value">Status</string>
     <string name="task_btn_save_value">Speichern</string>
-    <string name="task_btn_cancel_value">Speichern</string>
+    <string name="task_btn_cancel_value">Abbrechen</string>
 </resources>

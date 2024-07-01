@@ -26,7 +26,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="Name" />
+                android:text="@string/task_String_name_value" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="wrap_content"
@@ -40,7 +40,8 @@
                     android:id="@+id/task_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Name" />
+                    android:hint="Name"
+                    android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
@@ -56,7 +57,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="Beschreibung" />
+                android:text="@string/task_String_description_value" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="wrap_content"
@@ -86,7 +87,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="Status" />
+                android:text="@string/task_String_status_value" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="wrap_content"
@@ -119,7 +120,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Speichern" />
+            android:text="@string/task_btn_save_value" />
 
         <Button
             android:id="@+id/btn_cancle"
@@ -127,6 +128,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="btnCancel"
-            android:text="Abrechen" />
+            android:text="@string/task_btn_cancel_value" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

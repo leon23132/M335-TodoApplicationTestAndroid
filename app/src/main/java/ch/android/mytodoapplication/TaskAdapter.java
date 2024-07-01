@@ -34,7 +34,7 @@ public class TaskAdapter extends ArrayAdapter {
 
         Task currentTask = mTasks.get(position);
 
-        TextView textName = listItemView.findViewById(R.id.textTask_Name);
+        TextView textName = listItemView.findViewById(R.id.textTaskName);
         TextView textStatus = listItemView.findViewById(R.id.textTaskStatus);
         Button btnDone = listItemView.findViewById(R.id.btnDone);
 
