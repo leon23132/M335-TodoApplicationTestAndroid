@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onbtnMyList(View v){
-        Intent intent = new Intent(MainActivity.this, TaskList.class);
-
+        Intent intent = new Intent(this, TaskList.class);
+        startActivity(intent);
     }
 }
