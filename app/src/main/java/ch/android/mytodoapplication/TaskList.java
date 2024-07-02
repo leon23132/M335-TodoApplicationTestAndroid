@@ -22,6 +22,7 @@ public class TaskList extends AppCompatActivity implements View.OnClickListener 
     private ListView listView;
     private TaskAdapter adapter;
     private List<Task> tasksList;
+    private static final int REQUEST_CODE_EDIT_TASK = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,7 @@ public class TaskList extends AppCompatActivity implements View.OnClickListener 
 
         listView = findViewById(R.id.list_tasks);
         tasksList = new ArrayList<>();
-        adapter = new TaskAdapter(this,tasksList);
+        adapter = new TaskAdapter(this, tasksList);
 
         listView.setAdapter(adapter);
 
@@ -49,7 +50,9 @@ public class TaskList extends AppCompatActivity implements View.OnClickListener 
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Task selectedTask = tasksList.get(position);
-            // Implementiere hier die Logik für die Auswahl einer Aufgabe in der Liste
+            Intent intent = new Intent(TaskList.this, AddNewTask.class);
+            intent.putExtra("id", selectedTask.getId());
+            startActivityForResult(intent, REQUEST_CODE_EDIT_TASK);
         });
 
     }
@@ -59,17 +62,18 @@ public class TaskList extends AppCompatActivity implements View.OnClickListener 
 
     }
 
-    public void  btnAddTask(View v){
+    public void btnAddTask(View v) {
         Intent intent = new Intent(this, AddNewTask.class);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_CODE_ADD_TASK);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CODE_ADD_TASK && resultCode == RESULT_OK) {
-            loadTasks();
+
+        if ((requestCode == REQUEST_CODE_ADD_TASK || requestCode == REQUEST_CODE_EDIT_TASK) && resultCode == RESULT_OK) {
+            loadTasks(); // Reload the tasks after adding or editing a task
         }
     }
 
@@ -79,8 +83,7 @@ public class TaskList extends AppCompatActivity implements View.OnClickListener 
     }
 
 
-
-    private void loadTasks() {
+    public void loadTasks() {
         new Thread(() -> {
             List<Task> tasks = db.taskDao().selectAll();
 
@@ -91,6 +94,18 @@ public class TaskList extends AppCompatActivity implements View.OnClickListener 
             });
         }).start();
     }
+
+    public void delete(Task task) {
+        new Thread(() -> {
+            db.taskDao().delete(task);
+            runOnUiThread(() -> {
+                tasksList.remove(task);
+                adapter.notifyDataSetChanged();
+            });
+            loadTasks();
+        }).start();
+    }
+
 
     @Override
     protected void onDestroy() {

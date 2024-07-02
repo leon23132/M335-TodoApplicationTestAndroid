@@ -1,5 +1,6 @@
 package ch.android.mytodoapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +17,9 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public class AddNewTask extends AppCompatActivity implements View.OnClickListener {
 
+    private Task item;
+    private AppDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +31,18 @@ public class AddNewTask extends AppCompatActivity implements View.OnClickListene
             return insets;
         });
 
+        db = Room.databaseBuilder(getApplicationContext(),
+                AppDatabase.class, "task_db").build();
+
+        Intent givenIntent = getIntent();
+        int item_id = givenIntent.getIntExtra("id", -1);
+
+        if (item_id > 0) {
+            new Thread(() -> {
+                item = db.taskDao().selectById(item_id);
+                runOnUiThread(() -> loadEditData(item));
+            }).start();
+        }
 
         //Find The Inputs
         TextInputEditText txtTaskName = findViewById(R.id.task_name);
@@ -41,31 +57,44 @@ public class AddNewTask extends AppCompatActivity implements View.OnClickListene
                 String taskDescription = txtTaskDescription.getText().toString();
                 String taskStatus = txtTaskStatus.getText().toString();
 
-                Task item = new Task(taskName, taskDescription, taskStatus);
-
-                AppDatabase db = Room.databaseBuilder(getApplicationContext()
-                                , AppDatabase.class,
-                                "task_db")
-                        .build();
+                if (item == null) {
+                    item = new Task(taskName, taskDescription, taskStatus);
+                } else {
+                    item.setTaskName(taskName);
+                    item.setTaskDescription(taskDescription);
+                    item.setTaskStatus(taskStatus);
+                }
 
                 new Thread(() -> {
-                    db.taskDao().insert(item);
+                    if (item.getId() > 0) {
+                        db.taskDao().update(item);
+                        Log.d("UpdateActivity", "Updated Item: " + item.toString());
+                    } else {
+                        db.taskDao().insert(item);
+                        Log.d("InsertActivity", "Saved Item: " + item.toString());
+                    }
                     db.close();
-                    Log.d("InsertActivity", "Saved Item" + item.toString());
+                    setResult(RESULT_OK);
                     finish();
                 }).start();
-
-                setResult(RESULT_OK);
             }
         });
-
-
     }
 
+    public void loadEditData(Task task) {
+        TextInputEditText txtTaskName = findViewById(R.id.task_name);
+        TextInputEditText txtTaskDescription = findViewById(R.id.task_description);
+        TextInputEditText txtTaskStatus = findViewById(R.id.task_status);
+
+        txtTaskName.setText(task.getTaskName());
+        txtTaskDescription.setText(task.getTaskDescription());
+        txtTaskStatus.setText(task.getTaskStatus());
+        item = task;
+    }
 
     @Override
     public void onClick(View v) {
-
+        // Implementiere hier die Logik für Klickereignisse, falls erforderlich
     }
 
     public void btnCancel(View v) {
